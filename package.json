@@ -1,11 +1,14 @@
 {
-  "name": "wolven-bot",
+  "name": "Werewolves-Bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot designed to automate parts of the Werewolves game on Discord.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Nick Lersberghe",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.0.2"
+  }
 }
