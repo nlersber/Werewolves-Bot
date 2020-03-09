@@ -1,10 +1,6 @@
-const Discord = require("discord.js"); //Load discord library
-const bot = new Discord.Client(); //Loading bot itself
+const Discord = require("discord.js");
+const settings = require("./settings.json");
 
-bot.on("message", message => {
-  if (message.content == "ping") message.channel.send("pong");
-});
+const bot = new Discord.Client({disableEveryone: true});
 
-
-
-bot.login("Njg2MzQ0MzIyMDg5NjE1Mzg3.XmV62Q.IjB8XDY6B6YEeygBKe8h1NM3gQQ");
+bot.login(settings.token)
