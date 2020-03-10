@@ -6,29 +6,33 @@ const data = require("./data.json"); //Contains data. Players, roles, etc
 const fs = require("fs"); //File-system, used to write to json
 
 const client = new commando.CommandoClient({
-  owner: "686344322089615387", // Your ID here.
+  owner: "686344322089615387", // Your ID here.//686344322089615387
   commandPrefix: "$", // The prefix of your bot.
   unknownCommandResponse: false // Set this to true if you want to send a message when a user uses the prefix not followed by a command
 });
 
 client.on("ready", () => {
-  console.log("Yup");
   clearData();
   initData();
-  console.log(data);
 });
-
-//initData();
 
 client.registry.registerDefaults();
 
+client.registry.registerGroup('admin', 'Admin Commands');
+client.registry.registerCommandsIn(path.join(__dirname, '/commands'))
+
+
 client.login(settings.token);
 
+
+
+
+
+
+//Functions
+
 function initData() {
-  console.log(!!data);
-  console.log(data.roles);
   if (!!data && !!!data.roles.length) {
-    console.log("Pushing");
     data.roles.push(new GameRole(ROLENAME[1], ALIGNMENT[1], ACTIONTIMING[5]));
     data.roles.push(new GameRole(ROLENAME[2], ALIGNMENT[1], ACTIONTIMING[2]));
     data.roles.push(new GameRole(ROLENAME[3], ALIGNMENT[1], ACTIONTIMING[6]));
@@ -39,13 +43,25 @@ function initData() {
     data.roles.push(new GameRole(ROLENAME[8], ALIGNMENT[1], ACTIONTIMING[6]));
     data.roles.push(new GameRole(ROLENAME[9], ALIGNMENT[1], ACTIONTIMING[6]));
     data.roles.push(new GameRole(ROLENAME[10], ALIGNMENT[1], ACTIONTIMING[6]));
+    
+    fs.writeFileSync("./data.json", JSON.stringify(data));
+    console.log('written');
   }
+
 }
 
 function clearData() {
   data.players = [];
   data.roles = [];
 }
+
+
+
+
+
+
+
+
 
 //Classes
 var ROLENAME;
@@ -83,7 +99,7 @@ var ACTIONTIMING;
 })(ACTIONTIMING || (ACTIONTIMING = {}));
 
 class Player {
-  constructor(id, user, isMayor = false, isAlive = true, role, chooseable) {
+  constructor(id, user, isMayor = false, isAlive = false, role, chooseable) {
     this.id = id;
     this.user = user;
     this.isMayor = isMayor;
