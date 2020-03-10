@@ -12,8 +12,8 @@ const client = new commando.CommandoClient({
 });
 
 client.on("ready", () => {
-  clearData();
-  initData();
+  // clearData();
+  // initData();
 });
 
 client.registry.registerDefaults();

@@ -1,5 +1,5 @@
-const { Command } = require("discord.js-commando");
-const Discord = require("discord.js");
+const { Command, CommandMessage } = require("discord.js-commando");
+const { Discord } = require("discord.js");
 
 module.exports = class StartCommand extends Command {
   constructor(client) {
@@ -12,7 +12,14 @@ module.exports = class StartCommand extends Command {
   }
 
   run(message, args) {
-    if (!args || !args.length || args.length !== 1) return;
-    let channelid = args[0];
+    message
+      .delete()
+      .then(s =>
+        s.channel.send(
+          "Inschrijven voor het volgende spel doe je door te reageren.\n" +
+            "👍 als je actief wil meespelen.\n" +
+            "👎 als je niet actief wil meedoen maar gewoon het spelverloop in het dodenchannel wil meevolgen."
+        )//Add reactions and limit to single reaction
+      ).catch()
   }
 };
