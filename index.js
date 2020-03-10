@@ -12,56 +12,49 @@ const client = new commando.CommandoClient({
 });
 
 client.on("ready", () => {
-  // clearData();
-  // initData();
+  clearData();
+  initData();
+});
+
+//Make sure
+client.on("messageReactionAdd", function(messageReaction, user) {
+  console.log("Reaction");
 });
 
 client.registry.registerDefaults();
 
-client.registry.registerGroup('admin', 'Admin Commands');
-client.registry.registerCommandsIn(path.join(__dirname, '/commands'))
-
+client.registry.registerGroup("admin", "Admin Commands");
+client.registry.registerCommandsIn(path.join(__dirname, "/commands"));
 
 client.login(settings.token);
-
-
-
-
-
 
 //Functions
 
 function initData() {
   if (!!data && !!!data.roles.length) {
-    data.roles.push(new GameRole(ROLENAME[1], ALIGNMENT[1], ACTIONTIMING[5]));
-    data.roles.push(new GameRole(ROLENAME[2], ALIGNMENT[1], ACTIONTIMING[2]));
-    data.roles.push(new GameRole(ROLENAME[3], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[4], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[5], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[6], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[7], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[8], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[9], ALIGNMENT[1], ACTIONTIMING[6]));
-    data.roles.push(new GameRole(ROLENAME[10], ALIGNMENT[1], ACTIONTIMING[6]));
-    
-    fs.writeFileSync("./data.json", JSON.stringify(data));
-    console.log('written');
-  }
+    data.roles.concat([
+      new GameRole(ROLENAME[1], ALIGNMENT[1], ACTIONTIMING[5]),
+      new GameRole(ROLENAME[2], ALIGNMENT[1], ACTIONTIMING[2]),
+      new GameRole(ROLENAME[3], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[4], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[5], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[6], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[7], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[8], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[9], ALIGNMENT[1], ACTIONTIMING[6]),
+      new GameRole(ROLENAME[10], ALIGNMENT[1], ACTIONTIMING[6])
+    ]);
 
+    fs.writeFileSync("./data.json", JSON.stringify(data));
+    console.log("written");
+  }
 }
 
 function clearData() {
   data.players = [];
   data.roles = [];
+  data.inschrijfchannel = 0;
 }
-
-
-
-
-
-
-
-
 
 //Classes
 var ROLENAME;
