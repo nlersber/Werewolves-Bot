@@ -12,6 +12,7 @@
     "discord.js": "^11.6.2",
     "discord.js-commando": "^0.10.0",
     "fs": "0.0.1-security",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "rxjs": "^6.5.4"
   }
 }

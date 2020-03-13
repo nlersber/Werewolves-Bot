@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "noImplicitAny": false,
+        "outDir": "built",
+        "rootDir": "models",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

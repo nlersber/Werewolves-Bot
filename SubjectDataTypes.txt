@@ -1,0 +1,3 @@
+'deadlineinschrijving' : gebruikt om een deadline voor inschrijvingen te triggeren
+'mayorspeech': burgemeesterspeeches
+'mayorvote': stemming burgemeester

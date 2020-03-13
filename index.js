@@ -4,6 +4,13 @@ const path = require("path");
 const commando = require("discord.js-commando"); //Discord command API
 const data = require("./data.json"); //Contains data. Players, roles, etc
 const fs = require("fs"); //File-system, used to write to json
+const rxjs = require("rxjs");
+const emitter = require("./DataEmitter");
+
+/* #region declaration timers  */
+let timerDeadlineInschrijving;
+let timerDeadlineRoleSet;
+/* #endregion */
 
 const client = new commando.CommandoClient({
   owner: "686344322089615387", // Your ID here.//686344322089615387
@@ -14,11 +21,27 @@ const client = new commando.CommandoClient({
 client.on("ready", () => {
   clearData();
   initData();
+  //TODO: check for set timers in data, re-initialize them
 });
 
 //Make sure
 client.on("messageReactionAdd", function(messageReaction, user) {
-  console.log("Reaction");
+  if (user.bot) console.log("is bot");
+  let reactions = messageReaction.message.reactions;
+});
+//reaction to custom events via Subject
+emitter.subject.subscribe(s => {
+  let type = s.type.toLowerCase();
+  let data = s.data;
+
+  console.log("in subscribe");
+  console.log(data);
+  if (!!!type) return; //Return if no type is given
+
+  switch (type) {
+    case "inschrijving":
+      setDeadlineInschrijving(data.datetime, data.author);
+  }
 });
 
 client.registry.registerDefaults();
@@ -29,7 +52,9 @@ client.registry.registerCommandsIn(path.join(__dirname, "/commands"));
 client.login(settings.token);
 
 //Functions
+/* #region Functions */
 
+/* #region  Functions init */
 function initData() {
   if (!!data && !!!data.roles.length) {
     data.roles.concat([
@@ -55,8 +80,23 @@ function clearData() {
   data.roles = [];
   data.inschrijfchannel = 0;
 }
+/* #endregion */
+
+function setDeadlineInschrijving(time, author) {
+  let datetime = new Date(time);
+  if (!!!datetime) {
+    author.send(
+      `De deadline '${time}' is niet correct geformatteerd. Bekijk het vorige bericht voor de juiste formatting.`
+    );
+    return;
+  }
+  author.send("Gelukt");
+}
+
+/* #endregion Functions */
 
 //Classes
+/* #region  Classes + Enums */
 var ROLENAME;
 (function(ROLENAME) {
   //Goede rollen
@@ -108,3 +148,5 @@ class GameRole {
     this.actiontiming = actiontiming;
   }
 }
+
+/* #endregion */
