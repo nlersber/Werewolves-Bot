@@ -10,9 +10,6 @@ class DataEmitter {
   }
 
   emit(type, data) {
-    console.log("gottem");
-    console.log(type);
-    console.log(data);
     this.subject.next({ type, data });
   }
 }

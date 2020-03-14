@@ -2,7 +2,7 @@ const { Command, CommandMessage } = require("discord.js-commando");
 const { Discord } = require("discord.js");
 //const data = require("../../data.json");
 const fs = require("fs");
-const emitter = require("../../DataEmitter");
+const emitter = require("../../models/DataEmitter");
 
 module.exports = class DeadlineCommand extends Command {
   constructor(client) {
@@ -24,22 +24,25 @@ module.exports = class DeadlineCommand extends Command {
       return;
     }
 
-    let type = "";
-    let data = {};
+    message.delete().then(() => {
 
-    type = args[0];
-    data.author = message.author;
+      let type = "";
+      let data = {};
 
-    switch (args.length) {
-      case 2:
-        data.datestring = args[1];
-        break;
-      case 3:
-        data.number = args[1];
-        data.datestring = args[2];
-        break;
-    }
+      type = args[0];
+      data.author = message.author;
 
-    emitter.emit(type, data);
+      switch (args.length) {
+        case 2:
+          data.datestring = args[1];
+          break;
+        case 3:
+          data.number = args[1];
+          data.datestring = args[2];
+          break;
+      }
+
+      emitter.emit(type, data);
+    });
   }
 };

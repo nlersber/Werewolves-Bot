@@ -5,7 +5,10 @@ const commando = require("discord.js-commando"); //Discord command API
 const data = require("./data.json"); //Contains data. Players, roles, etc
 const fs = require("fs"); //File-system, used to write to json
 const rxjs = require("rxjs");
-const emitter = require("./DataEmitter");
+const emitter = require("./models/DataEmitter");
+const Player = require("./models/Player");
+const GameRole = require("./models/GameRole");
+const userManager = require("./UserManager");
 
 /* #region declaration timers  */
 let timerDeadlineInschrijving;
@@ -27,21 +30,20 @@ client.on("ready", () => {
 //Make sure
 client.on("messageReactionAdd", function(messageReaction, user) {
   if (user.bot) console.log("is bot");
-  let reactions = messageReaction.message.reactions;
 });
 //reaction to custom events via Subject
 emitter.subject.subscribe(s => {
   let type = s.type.toLowerCase();
   let data = s.data;
-
-  console.log("in subscribe");
-  console.log(data);
   if (!!!type) return; //Return if no type is given
 
   switch (type) {
     case "inschrijving":
       setDeadlineInschrijving(data.datetime, data.author);
+      break;
   }
+
+  saveData();
 });
 
 client.registry.registerDefaults();
@@ -78,25 +80,64 @@ function initData() {
 function clearData() {
   data.players = [];
   data.roles = [];
-  data.inschrijfchannel = 0;
+  data.inschrijf.inschrijfmessage = 0;
+  data.inschrijf.inschrijfchannel = 0;
 }
 /* #endregion */
 
 function setDeadlineInschrijving(time, author) {
   let datetime = new Date(time);
+  datetime.setSeconds(datetime.getSeconds() + 2); //Remove for prod
   if (!!!datetime) {
     author.send(
       `De deadline '${time}' is niet correct geformatteerd. Bekijk het vorige bericht voor de juiste formatting.`
     );
     return;
   }
+
+  data.deadlines.inschrijving = time;
+
+  datetime.setSeconds(datetime.getSeconds() + 2);
+
+  timerDeadlineInschrijving = rxjs.timer(datetime);
+  timerDeadlineInschrijving.subscribe(s => {
+    //get channel
+    let inschrijfchannel = client.channels.find(
+      s => s.id === data.inschrijf.inschrijfchannel
+    );
+    //fetch message, then go over the
+    inschrijfchannel.fetchMessage(data.inschrijf.inschrijfmessage).then(s => {
+      let counter = 1;
+      s.reactions.array().forEach(t => {
+        //👍//👎
+        let isAlive;
+        if (t.emoji.name === "👍") isAlive = true;
+        else if (t.emoji.name === "👎") isAlive = false;
+        else return;
+
+        t.users = t.users.filter(s => s !== client.user);
+        t.users.array().forEach(u => {
+          console.log("added users");
+          userManager.addActiveUser(
+            new Player(counter, u.id, false, isAlive, null, null)
+          );
+        });
+      });
+    });
+  });
+
+  saveData();
   author.send("Gelukt");
+}
+
+function saveData() {
+  fs.writeFileSync("./data.json", JSON.stringify(data));
 }
 
 /* #endregion Functions */
 
-//Classes
-/* #region  Classes + Enums */
+//Enums
+/* #region Enums */
 var ROLENAME;
 (function(ROLENAME) {
   //Goede rollen
@@ -130,23 +171,4 @@ var ACTIONTIMING;
   ACTIONTIMING[(ACTIONTIMING["Enkel"] = 5)] = "Enkel";
   ACTIONTIMING[(ACTIONTIMING["Geen"] = 6)] = "Geen";
 })(ACTIONTIMING || (ACTIONTIMING = {}));
-
-class Player {
-  constructor(id, user, isMayor = false, isAlive = false, role, chooseable) {
-    this.id = id;
-    this.user = user;
-    this.isMayor = isMayor;
-    this.isAlive = isAlive;
-    this.role = role;
-    this.chooseable = chooseable;
-  }
-}
-class GameRole {
-  constructor(name, alignment, actiontiming) {
-    this.name = name;
-    this.alignment = alignment;
-    this.actiontiming = actiontiming;
-  }
-}
-
 /* #endregion */

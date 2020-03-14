@@ -14,28 +14,30 @@ module.exports = class StartCommand extends Command {
   }
 
   run(message, args) {
-    data.inschrijfchannel = message.channel.id;
-    data.hasStarted = true;
-    fs.writeFileSync("../../data.json", JSON.stringify(data));
-
     message
       .delete()
-      .then(
-        s =>
-          s.channel.send(
-            "Inschrijven voor het volgende spel doe je door te reageren.\n\n" +
-              "👍 als je actief wil meespelen.\n\n" +
-              "👎 als je niet actief wil meedoen maar gewoon het spelverloop in het dodenchannel wil meevolgen."
-          ) //Add reactions and limit to single reaction
+      .then(s =>
+        s.channel.send(
+          "Inschrijven voor het volgende spel doe je door te reageren.\n\n" +
+            "👍 als je actief wil meespelen.\n\n" +
+            "👎 als je niet actief wil meedoen maar gewoon het spelverloop in het dodenchannel wil meevolgen."
+        )
       )
       .then(async s => {
-        await s.react("👍");
-        await s.react("👎");
+        //Adds reactions
+
+        await s.react("👍"); //👍
+        await s.react("👎"); //👎
+        //Stores message data
+        data.inschrijf.inschrijfmessage = s.id;
+        data.inschrijf.inschrijfchannel = message.channel.id;
+        data.hasStarted = true;
+        fs.writeFileSync("../../data.json", JSON.stringify(data));
       })
       .catch();
 
     // message.author.send(
-    //   "Nu moeten de deadlines ingesteld worden. Dit doe je via de command $deadline {date}.\n " 
+    //   "Nu moeten de deadlines ingesteld worden. Dit doe je via de command $deadline {date}.\n "
     //   + "De date moet geformateerd zijn volgens '2011-10-10T14:48:00'. Jaar-maand-dag Uur:minuten:seconden, aan elkaar geplakt met een 'T'.\n"
     //   + "Dit doe je in het kanaal waar de deadlines zullen komen. Het commando wordt verwijderd en vervangen door een bericht met de deadline in.\n"
     //   + "Na het verlopen van de deadline, worden deze vanzelf doorschrapt."

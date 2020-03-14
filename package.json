@@ -9,6 +9,7 @@
   "author": "Nick Lersberghe",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/collection": "^0.1.5",
     "discord.js": "^11.6.2",
     "discord.js-commando": "^0.10.0",
     "fs": "0.0.1-security",
