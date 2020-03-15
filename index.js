@@ -27,10 +27,6 @@ client.on("ready", () => {
   //TODO: check for set timers in data, re-initialize them
 });
 
-//Make sure
-client.on("messageReactionAdd", function(messageReaction, user) {
-  if (user.bot) console.log("is bot");
-});
 //reaction to custom events via Subject
 emitter.subject.subscribe(s => {
   let type = s.type.toLowerCase();
@@ -39,7 +35,7 @@ emitter.subject.subscribe(s => {
 
   switch (type) {
     case "inschrijving":
-      setDeadlineInschrijving(data.datetime, data.author);
+      setDeadlineInschrijving(data.datestring, data.author);
       break;
   }
 
@@ -53,7 +49,6 @@ client.registry.registerCommandsIn(path.join(__dirname, "/commands"));
 
 client.login(settings.token);
 
-//Functions
 /* #region Functions */
 
 /* #region  Functions init */
@@ -85,9 +80,19 @@ function clearData() {
 }
 /* #endregion */
 
+/* #region  Functions set deadlines */
+
+/**
+ * Sets the deadline for inschrijvingen. Checks the arguments, adds and saves the timer, goes over all the reactions to add the Players
+ * @param {string} time Date string used to make the timer.
+ * @param {User} author User that sent the commando. Used to send an error message if a problem is encountered.
+ */
 function setDeadlineInschrijving(time, author) {
+  //make date, check if valid string
   let datetime = new Date(time);
-  datetime.setSeconds(datetime.getSeconds() + 2); //Remove for prod
+  //datetime.setSeconds(datetime.getSeconds() + 2); //Remove for prod
+
+  //If date is invalid
   if (!!!datetime) {
     author.send(
       `De deadline '${time}' is niet correct geformatteerd. Bekijk het vorige bericht voor de juiste formatting.`
@@ -95,40 +100,56 @@ function setDeadlineInschrijving(time, author) {
     return;
   }
 
+  //store datestring if valid
   data.deadlines.inschrijving = time;
 
-  datetime.setSeconds(datetime.getSeconds() + 2);
-
+  //make timer
   timerDeadlineInschrijving = rxjs.timer(datetime);
+
+  //add subscribe to timer
   timerDeadlineInschrijving.subscribe(s => {
     //get channel
     let inschrijfchannel = client.channels.find(
       s => s.id === data.inschrijf.inschrijfchannel
     );
-    //fetch message, then go over the
+
+    //fetch message, then go over the reactions
     inschrijfchannel.fetchMessage(data.inschrijf.inschrijfmessage).then(s => {
+      //counter used to add an index to each player
       let counter = 1;
+      //go over each reaction
       s.reactions.array().forEach(t => {
         //👍//👎
+
+        //Used to determine which emoji was used. If neither was used, input is ignored.
         let isAlive;
         if (t.emoji.name === "👍") isAlive = true;
+        //if participating
         else if (t.emoji.name === "👎") isAlive = false;
-        else return;
+        //if observing
+        else return; //if pretending
 
+        //filter out the bot itself
         t.users = t.users.filter(s => s !== client.user);
+
+        //for each reaction, go over the users that reacted
         t.users.array().forEach(u => {
-          console.log("added users");
+          //add user to the JSON
           userManager.addActiveUser(
             new Player(counter, u.id, false, isAlive, null, null)
           );
-        });
-      });
-    });
-  });
+          //increment ID counter
+          counter++;
+        }); //end forEach users
+      }); //end forEach reactions
+    }); //end fetchmessage .then
+    saveData();
+  }); //end subscribe
 
-  saveData();
-  author.send("Gelukt");
+  //Save data. Added players get saved automatically.
 }
+
+/* #endregion */
 
 function saveData() {
   fs.writeFileSync("./data.json", JSON.stringify(data));

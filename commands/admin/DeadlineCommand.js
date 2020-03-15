@@ -15,6 +15,8 @@ module.exports = class DeadlineCommand extends Command {
   }
 
   run(message, args) {
+    //console.log(message);
+
     args = args.split(" ");
 
     if (!!!args || !Array.isArray(args)) {
@@ -25,7 +27,6 @@ module.exports = class DeadlineCommand extends Command {
     }
 
     message.delete().then(() => {
-
       let type = "";
       let data = {};
 

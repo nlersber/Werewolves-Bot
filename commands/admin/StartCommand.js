@@ -14,6 +14,7 @@ module.exports = class StartCommand extends Command {
   }
 
   run(message, args) {
+    //console.log(message);
     message
       .delete()
       .then(s =>
