@@ -8,7 +8,7 @@ const rxjs = require("rxjs");
 const emitter = require("./models/DataEmitter");
 const Player = require("./models/Player");
 const GameRole = require("./models/GameRole");
-const userManager = require("./UserManager");
+const userManager = require("./Managers/UserManager");
 
 /* #region declaration timers  */
 let timerDeadlineInschrijving;

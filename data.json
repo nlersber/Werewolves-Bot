@@ -1,1 +1,16 @@
-{"roles":[],"players":[{"id":1,"user":"225259510229499915","isMayor":false,"isAlive":true,"role":null,"chooseable":null}],"inschrijf":{"inschrijfmessage":"688856643127083093","inschrijfchannel":"688527702470557708"},"hasStarted":true,"deadlines":{"inschrijving":"2020-03-15T22:10:40","mayorspeech":"","mayorvote":"","nacht":[],"dag":[]}}
+{
+    "roles": [],
+    "players": [],
+    "inschrijf": {
+        "inschrijfmessage": 0,
+        "inschrijfchannel": 0
+    },
+    "hasStarted": true,
+    "deadlines": {
+        "inschrijving": "2020-03-15T22:10:40",
+        "mayorspeech": "",
+        "mayorvote": "",
+        "nacht": [],
+        "dag": []
+    }
+}

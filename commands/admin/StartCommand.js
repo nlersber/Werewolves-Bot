@@ -2,6 +2,7 @@ const { Command, CommandMessage } = require("discord.js-commando");
 const { Discord } = require("discord.js");
 const data = require("../../data.json");
 const fs = require("fs");
+const UserManager = require("../../Managers/UserManager");
 
 module.exports = class StartCommand extends Command {
   constructor(client) {
@@ -34,6 +35,7 @@ module.exports = class StartCommand extends Command {
         data.inschrijf.inschrijfchannel = message.channel.id;
         data.hasStarted = true;
         fs.writeFileSync("../../data.json", JSON.stringify(data));
+        UserManager.setGuild(message.message.guild)
       })
       .catch();
 

@@ -15,7 +15,12 @@ module.exports = class DeadlineCommand extends Command {
   }
 
   run(message, args) {
-    //console.log(message);
+    if (!data.hasStarted) {
+      message.reply(
+        "Je moet eerst het spel opstarten voordat je deadlines kan toevoegen. Dit doe je door in het kanaal voor de inschrijvingen het commando '$start' te gebruiken."
+      );
+      return;
+    }
 
     args = args.split(" ");
 
