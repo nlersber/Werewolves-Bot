@@ -20,6 +20,7 @@ const client = new commando.CommandoClient({
   commandPrefix: "$", // The prefix of your bot.
   unknownCommandResponse: false // Set this to true if you want to send a message when a user uses the prefix not followed by a command
 });
+module.exports = client;
 
 client.on("ready", () => {
   clearData();
@@ -73,10 +74,30 @@ function initData() {
 }
 
 function clearData() {
-  data.players = [];
-  data.roles = [];
-  data.inschrijf.inschrijfmessage = 0;
-  data.inschrijf.inschrijfchannel = 0;
+  fs.writeFileSync(
+    "./data.json",
+    JSON.stringify({
+      roles: [],
+      players: [],
+      hasStarted: false,
+      deadlines: {
+        inschrijving: "",
+        mayorspeech: "",
+        mayorvote: "",
+        nacht: [],
+        dag: []
+      },
+      channels: {
+        inschrijf: {
+          inschrijfmessage: 0,
+          inschrijfchannel: 0
+        },
+        guild: 0,
+        leiding: 0,
+        stem: 0
+      }
+    })
+  );
 }
 /* #endregion */
 
@@ -110,39 +131,41 @@ function setDeadlineInschrijving(time, author) {
   timerDeadlineInschrijving.subscribe(s => {
     //get channel
     let inschrijfchannel = client.channels.find(
-      s => s.id === data.inschrijf.inschrijfchannel
+      s => s.id === data.channels.inschrijf.inschrijfchannel
     );
 
     //fetch message, then go over the reactions
-    inschrijfchannel.fetchMessage(data.inschrijf.inschrijfmessage).then(s => {
-      //counter used to add an index to each player
-      let counter = 1;
-      //go over each reaction
-      s.reactions.array().forEach(t => {
-        //👍//👎
+    inschrijfchannel
+      .fetchMessage(data.channels.inschrijf.inschrijfmessage)
+      .then(s => {
+        //counter used to add an index to each player
+        let counter = 1;
+        //go over each reaction
+        s.reactions.array().forEach(t => {
+          //👍//👎
 
-        //Used to determine which emoji was used. If neither was used, input is ignored.
-        let isAlive;
-        if (t.emoji.name === "👍") isAlive = true;
-        //if participating
-        else if (t.emoji.name === "👎") isAlive = false;
-        //if observing
-        else return; //if pretending
+          //Used to determine which emoji was used. If neither was used, input is ignored.
+          let isAlive;
+          if (t.emoji.name === "👍") isAlive = true;
+          //if participating
+          else if (t.emoji.name === "👎") isAlive = false;
+          //if observing
+          else return; //if pretending
 
-        //filter out the bot itself
-        t.users = t.users.filter(s => s !== client.user);
+          //filter out the bot itself
+          t.users = t.users.filter(s => s !== client.user);
 
-        //for each reaction, go over the users that reacted
-        t.users.array().forEach(u => {
-          //add user to the JSON
-          userManager.addActiveUser(
-            new Player(counter, u.id, false, isAlive, null, null)
-          );
-          //increment ID counter
-          counter++;
-        }); //end forEach users
-      }); //end forEach reactions
-    }); //end fetchmessage .then
+          //for each reaction, go over the users that reacted
+          t.users.array().forEach(u => {
+            //add user to the JSON
+            userManager.addActiveUser(
+              new Player(counter, u.id, false, isAlive, null, null)
+            );
+            //increment ID counter
+            counter++;
+          }); //end forEach users
+        }); //end forEach reactions
+      }); //end fetchmessage .then
     saveData();
   }); //end subscribe
 

@@ -2,7 +2,7 @@ const { Command, CommandMessage } = require("discord.js-commando");
 const { Discord } = require("discord.js");
 const data = require("../../data.json");
 const fs = require("fs");
-const UserManager = require("../../Managers/UserManager");
+const ChannelManager = require("../../Managers/ChannelManager");
 
 module.exports = class StartCommand extends Command {
   constructor(client) {
@@ -10,11 +10,21 @@ module.exports = class StartCommand extends Command {
       name: "start",
       memberName: "start",
       group: "admin",
-      description: "Starts the game"
+      description: "Starts the game."
     });
   }
 
   run(message, args) {
+    if (message.guild.owner.id !== message.author.id) {
+      message
+        .reply(
+          "You are not the owner of this server. Only the owner can start the game.\nThis message will be deleted in 10 seconds."
+        )
+        .then(s => s.delete(10000));
+      return;
+    }
+
+    data.admin = message.author.id;
     //console.log(message);
     message
       .delete()
@@ -31,19 +41,20 @@ module.exports = class StartCommand extends Command {
         await s.react("👍"); //👍
         await s.react("👎"); //👎
         //Stores message data
-        data.inschrijf.inschrijfmessage = s.id;
-        data.inschrijf.inschrijfchannel = message.channel.id;
+        data.channels.inschrijf.inschrijfmessage = s.id;
+        data.channels.inschrijf.inschrijfchannel = message.channel.id;
         data.hasStarted = true;
+
         fs.writeFileSync("../../data.json", JSON.stringify(data));
-        UserManager.setGuild(message.message.guild)
+        ChannelManager.saveChannel(message.message.guild.id, "guild");
       })
       .catch();
 
-    // message.author.send(
-    //   "Nu moeten de deadlines ingesteld worden. Dit doe je via de command $deadline {date}.\n "
-    //   + "De date moet geformateerd zijn volgens '2011-10-10T14:48:00'. Jaar-maand-dag Uur:minuten:seconden, aan elkaar geplakt met een 'T'.\n"
-    //   + "Dit doe je in het kanaal waar de deadlines zullen komen. Het commando wordt verwijderd en vervangen door een bericht met de deadline in.\n"
-    //   + "Na het verlopen van de deadline, worden deze vanzelf doorschrapt."
-    // );
+    message.author.send(
+      "Nu moeten de deadlines ingesteld worden. Dit doe je via de command $deadline {date}.\n "
+      + "De date moet geformateerd zijn volgens '2011-10-10T14:48:00'. Jaar-maand-dag Uur:minuten:seconden, aan elkaar geplakt met een 'T'.\n"
+      + "Dit doe je in het kanaal waar de deadlines zullen komen. Het commando wordt verwijderd en vervangen door een bericht met de deadline in.\n"
+      + "Na het verlopen van de deadline, worden deze vanzelf doorschrapt."
+    );
   }
 };

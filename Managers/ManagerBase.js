@@ -1,4 +1,6 @@
 const CheckManager = require("./CheckManager");
+const fs = require("fs");
+const data = require("../data.json");
 
 class ManagerBase {
   /**
@@ -10,11 +12,6 @@ class ManagerBase {
   }
 
   check() {}
-
-  ///Gets set by any manager
-  setGuild(guild) {
-    if (!!!this.guild) this.guild = guild;
-  }
 }
 
 module.exports = ManagerBase;

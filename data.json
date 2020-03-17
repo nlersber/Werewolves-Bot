@@ -1,16 +1,1 @@
-{
-    "roles": [],
-    "players": [],
-    "inschrijf": {
-        "inschrijfmessage": 0,
-        "inschrijfchannel": 0
-    },
-    "hasStarted": true,
-    "deadlines": {
-        "inschrijving": "2020-03-15T22:10:40",
-        "mayorspeech": "",
-        "mayorvote": "",
-        "nacht": [],
-        "dag": []
-    }
-}
+{"roles":[],"players":[],"admin":0,"hasStarted":false,"deadlines":{"inschrijving":"","mayorspeech":"","mayorvote":"","nacht":[],"dag":[]},"channels":{"inschrijf":{"inschrijfmessage":0,"inschrijfchannel":0},"guild":0,"leiding":0,"stem":0}}
