@@ -28,7 +28,7 @@ client.on("ready", () => {
   //TODO: check for set timers in data, re-initialize them
 });
 
-//reaction to custom events via Subject
+//reaction to custom events via Subject. This Subject is used to set deadlines.
 emitter.subject.subscribe(s => {
   let type = s.type.toLowerCase();
   let data = s.data;
@@ -38,17 +38,28 @@ emitter.subject.subscribe(s => {
     case "inschrijving":
       setDeadlineInschrijving(data.datestring, data.author);
       break;
+    case "burgemeesterspeech":
+      setDeadlineBM(data.datestring, data.author);
+      break;
   }
 
   saveData();
 });
 
+/* #region Commando Client Configuration And Login  */
+//Registers default commands such as help
 client.registry.registerDefaults();
 
-client.registry.registerGroup("admin", "Admin Commands");
+//Register all the commando groups. Here, each group shared their level of permissions.
+client.registry.registerGroups([
+  ["admin", "Admin Commands"],
+  ["user", "User Commands"]
+]);
+//Registers where the commando files can be found
 client.registry.registerCommandsIn(path.join(__dirname, "/commands"));
-
+//Login for the bot
 client.login(settings.token);
+/* #endregion */
 
 /* #region Functions */
 
@@ -170,6 +181,20 @@ function setDeadlineInschrijving(time, author) {
   }); //end subscribe
 
   //Save data. Added players get saved automatically.
+}
+
+function setDeadlineBM(time, author) {
+  //make date, check if valid string
+  let datetime = new Date(time);
+  datetime.setSeconds(datetime.getSeconds() + 10); //Remove for prod
+
+  //If date is invalid
+  if (!!!datetime) {
+    author.send(
+      `De deadline '${time}' is niet correct geformatteerd. Bekijk het vorige bericht voor de juiste formatting.`
+    );
+    return;
+  }
 }
 
 /* #endregion */

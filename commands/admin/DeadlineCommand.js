@@ -15,9 +15,19 @@ module.exports = class DeadlineCommand extends Command {
   }
 
   run(message, args) {
+    
+    if (message.guild.owner.id !== message.author.id) {
+      message
+        .reply(
+          "You are not the owner of this server. Only the owner can use this command.\nThis message will be deleted in 10 seconds.\n"
+        )
+        .then(s => s.delete(10000));
+      return;
+    }
+
     if (!data.hasStarted) {
       message.reply(
-        "Je moet eerst het spel opstarten voordat je deadlines kan toevoegen. Dit doe je door in het kanaal voor de inschrijvingen het commando '$start' te gebruiken."
+        "Je moet eerst het spel opstarten voordat je deadlines kan toevoegen. Dit doe je door in het kanaal voor de inschrijvingen het commando '$start' te gebruiken.\n"
       );
       return;
     }

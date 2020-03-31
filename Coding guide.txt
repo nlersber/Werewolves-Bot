@@ -1,0 +1,21 @@
+Index.js:
+
+Limit coding in index.js to code that needs top-level access. If it can be done with a class, use a class.
+Keep regions collapsed unless needed for a cleaner editor.
+
+
+Commandos: 
+
+Make command names somewhat descriptive.
+If checking for conditions, remove messages if needed for clarity and return out of run method. Don't use nested code if it's not necessary.
+Keep track of typing in comments if needed.
+Work with blocks of related code. Checks, changing data, etc. Use a comment to annotate its use to keep the run method clean and clear.
+
+
+Classes:
+
+Keep their scope and use limited. Have a single purpose for each one. 
+Use them to encapsulate code and make re-use simple (e.g. saving data to JSON).
+Try to make simpletons clear. Export an instance if you need a singleton. Export the class if you need to make objects.
+Managers are always singletons. 
+Register each manager with the CheckManager if it needs some kind of checking. It uses a variation of a Strategy pattern to check.

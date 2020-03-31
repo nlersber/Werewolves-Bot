@@ -104,6 +104,20 @@ class ChannelManager extends ManagerBase {
     return string;
   }
 
+  checkSetup() {
+    const a = data.channels;
+
+    return (
+      a.inschrijf.inschrijfchannel &&
+      a.leiding &&
+      a.stem &&
+      a.players &&
+      a.roles &&
+      a.guild &&
+      a.mededeling
+    );
+  }
+
   /**
    * Saves a channel to data.json
    * @param {number} channel ID of the channel, guild or user to save
@@ -129,14 +143,15 @@ class ChannelManager extends ManagerBase {
       case "guild":
         data.channels.guild = channel;
         break;
-      case "admin":
-        data.channels.admin = channel;
+      case "mededeling":
+        data.channels.mededeling = channel;
         break;
       default:
-        return;
+        return false;
     }
 
     fs.writeFileSync("../data.json", JSON.stringify(data));
+    return true;
   }
 }
 

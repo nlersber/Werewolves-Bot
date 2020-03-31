@@ -25,7 +25,7 @@ class UserManager extends ManagerBase {
         "Er is nog geen admin of server ingesteld. Dit kan je doen door het spel te starten door in het inschrijfkanaal $'start' te gebruiken. Slechts 1 gebruiker kan admin zijn en de setup doen.\n";
       return string;
     }
-
+    
     user = client.guilds
       .find(s => s.id === data.channels.guild)
       .members.find(s => s.id === data.admin);
